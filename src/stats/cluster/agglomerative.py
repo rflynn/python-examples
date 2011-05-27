@@ -15,12 +15,6 @@ References:
  3. Johnson,S.C. 1967, "Hierarchical Clustering Schemes" Psychometrika, 2:241-254.
 """
 
-class ClusterLeaf:
-	def __init__(self, label):
-		self.label = label
-	def __repr__(self):
-		return self.label
-
 class Cluster:
 	def __init__(self):
 		pass
@@ -41,9 +35,10 @@ def agglomerate(labels, grid):
 	given a list of labels and a 2-D grid of distances, iteratively agglomerate
 	hierarchical Cluster
 	"""
-	clusters = [ClusterLeaf(label) for label in labels]
+	clusters = labels
 	while len(clusters) > 1:
 		# find 2 closest clusters
+		print clusters
 		d = [(1, 0, grid[1][0])]
 		for i,row in enumerate(grid[2:]):
 			d += [(i+2, j, c) for j,c in enumerate(row[:i+2])]
