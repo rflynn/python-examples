@@ -5,7 +5,7 @@
 Agglomerative Clustering Algorithm
 
 Iteratively build hierarchical cluster between all data points.
-O^2 complexity
+O(n^2) complexity
 
 Author: Ryan Flynn <parseerror+agglomerative-clustering@gmail.com>
 
@@ -39,10 +39,10 @@ def agglomerate(labels, grid):
 	while len(clusters) > 1:
 		# find 2 closest clusters
 		print clusters
-		d = [(1, 0, grid[1][0])]
+		distances = [(1, 0, grid[1][0])]
 		for i,row in enumerate(grid[2:]):
-			d += [(i+2, j, c) for j,c in enumerate(row[:i+2])]
-		j,i,_ = min(d, key=lambda x:x[2])
+			distances += [(i+2, j, c) for j,c in enumerate(row[:i+2])]
+		j,i,_ = min(distances, key=lambda x:x[2])
 		# merge i<-j
 		c = Cluster()
 		clusters, grid = c.add(clusters, grid, i, j)
