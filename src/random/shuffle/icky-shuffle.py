@@ -46,7 +46,8 @@ if __name__ == '__main__':
         now = time.time()
         q.put((n, runs, v, now - start))
 
-    RUNS = range(1, 100)
+    MAX = int(sys.argv[1]) if len(sys.argv) > 1 else 100
+    RUNS = range(1, MAX)
 
     man = Manager()
     q = man.Queue()
