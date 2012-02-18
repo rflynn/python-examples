@@ -21,7 +21,7 @@ import scipy
 import random
 from array import array
 
-def randlist(n):
+def seqshuffle(n):
     seq = array('L', range(n))
     random.shuffle(seq)
     return seq
@@ -39,7 +39,10 @@ if __name__ == '__main__':
         start = time.time()
         v = array('L', [0 for x in range(n)])
         for _ in xrange(runs):
-            v[randlist(n)[0]] += 1
+            try:
+                v[seqshuffle(n)[0]] += 1
+            except KeyboardInterrupt:
+                continue
         now = time.time()
         q.put((n, runs, v, now - start))
 
@@ -49,7 +52,6 @@ if __name__ == '__main__':
     q = man.Queue()
     p = Pool()
     trials = [(n, int(1e5), q) for n in RUNS]
-    # someone gets the runs in the pool
     p.map_async(run, trials)
 
     # blame http://zachseward.com/sparktweets/
