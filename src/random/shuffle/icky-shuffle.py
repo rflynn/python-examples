@@ -52,7 +52,7 @@ if __name__ == '__main__':
     man = Manager()
     q = man.Queue()
     p = Pool()
-    trials = [(n, int(1e5), q) for n in RUNS]
+    trials = [(n, int(2e4), q) for n in RUNS]
     p.map_async(run, trials)
 
     # blame http://zachseward.com/sparktweets/
