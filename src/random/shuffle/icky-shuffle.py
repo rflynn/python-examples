@@ -69,15 +69,15 @@ if __name__ == '__main__':
                     q.put((n, runs, v, elapsed))
             # print header occasionally
             if n % 20 == 1:
-                print '%-5s %-4s %-5s %-8s %-5s %-4s %-7s %s' % (
+                print '%-5s %-4s %-5s %-4s %-5s %-4s %-7s %s' % (
                     'secs', 'n', 'runs', 'mean', 'std', '100%', 'var', 'graph')
             # dump stats
             mean = scipy.mean(v)
             std = scipy.std(v)
             outside = max(abs(x-mean) for x in v)
             dist = outside / (1 if std == 0 else std)
-            print '%5.1f %4u %4sk %8.1f %5.1f %3.1fσ%s %7.1f ' % (
-                elapsed, n, runs/1000, mean, std,
+            print '%5.1f %4u %4sk %4u %5.1f %3.1fσ%s %7.1f ' % (
+                elapsed, n, float(runs)/1000, mean, std,
                 dist, '!' * int(max(0, dist-4)), scipy.var(v)),
             # silly Unicode histogram
             maxv = max(v)
