@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     # blame http://zachseward.com/sparktweets/
     # http://en.wikipedia.org/wiki/List_of_Unicode_characters#Block_elements
-    BLOCKS = u' ▁▂▃▄▅▆▇█'
+    BLOCKS = u' _▁▂▃▄▅▆▇█'
 
     try:
         for r in RUNS:
