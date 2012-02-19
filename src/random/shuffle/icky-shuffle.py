@@ -78,7 +78,7 @@ if __name__ == '__main__':
             outside = max(abs(x-mean) for x in v)
             dist = outside / (1 if std == 0 else std)
             print '%5.1f %4u %6s %4u %4.1f %6.1f ' % (
-                elapsed, n, runs, mean, std, scipy.var(v)),
+                elapsed, size, runs, mean, std, scipy.var(v)),
             # silly Unicode histogram
             maxv = max(v)
             for k,freq in enumerate(v):
