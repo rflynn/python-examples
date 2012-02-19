@@ -70,7 +70,7 @@ if __name__ == '__main__':
                 if n != r:
                     q.put((n, runs, v, elapsed))
             # print header occasionally
-            if n % 20 == 1:
+            if n % 25 == 1:
                 print '%-5s %-4s %-5s %-4s %-4s %-4s %-5s %s' % (
                     'secs', 'n', 'runs', 'mean', 'std', '100%', 'var', 'graph')
             # dump stats
