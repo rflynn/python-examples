@@ -11,10 +11,12 @@ Challenge: http://beust.com/weblog/2012/02/16/a-new-coding-challenge-2/
 2) Prove that the function you wrote in 1) returns “really random” arrays.
 
 Reasoning:
- The distinct outputs for a [0..n] shuffling are n!
+ The distinct outputs for shuffling [0..n] are n!
  We quickly run out of space and time to check them all.
- Given a random ordering the frequency of the [0]th item should be uniform.
- Run trials and display the results of the frequency of [0]th value.
+ Given a random ordering the probability of any one number appearing in a
+ particular position is 1/n.
+ Therefore, we can estimate the effectiveness of the entire shuffle by running
+ many trials and measuring the frequency of values in one spot.
 """
 
 import scipy
