@@ -37,24 +37,24 @@ if __name__ == '__main__':
 
     def run(args):
         # [0]th value frequency over a set of trials
-        n, runs, q = args
+        n, size, runs, q = args
         start = time.time()
-        v = array('L', [0 for x in range(n)])
+        v = array('L', [0 for x in range(size)])
         for _ in xrange(runs):
             try:
-                v[seqshuffle(n)[0]] += 1
+                v[seqshuffle(size)[0]] += 1
             except KeyboardInterrupt:
                 continue
         now = time.time()
-        q.put((n, runs, v, now - start))
+        q.put((n, size, runs, v, now - start))
 
-    MAX = int(sys.argv[1]) if len(sys.argv) > 1 else 100
-    RUNS = range(1, MAX+1)
+    MAX = int(sys.argv[1]) if len(sys.argv) > 1 else 50
+    RUNS = range(1, 20)
 
     man = Manager()
     q = man.Queue()
     p = Pool()
-    trials = [(n, n*200, q) for n in RUNS]
+    trials = [(n, MAX, (n*20)**2, q) for n in RUNS]
     p.map_async(run, trials)
 
     # blame http://zachseward.com/sparktweets/
@@ -66,21 +66,20 @@ if __name__ == '__main__':
             # laziest way of displaying results in the right order
             n = None
             while n != r:
-                n, runs, v, elapsed = q.get()
+                n, size, runs, v, elapsed = q.get()
                 if n != r:
-                    q.put((n, runs, v, elapsed))
+                    q.put((n, size, runs, v, elapsed))
             # print header occasionally
             if n % 25 == 1:
-                print '%-5s %-4s %-5s %-4s %-4s %-4s %-5s %s' % (
-                    'secs', 'n', 'runs', 'mean', 'std', '100%', 'var', 'graph')
+                print '%-5s %-4s %-6s %-4s %-4s %-6s %s' % (
+                    'secs', 'n', 'trials', 'mean', 'std', 'var', 'graph')
             # dump stats
             mean = scipy.mean(v)
             std = scipy.std(v)
             outside = max(abs(x-mean) for x in v)
             dist = outside / (1 if std == 0 else std)
-            print '%5.1f %4u %4sk %4u %4.1f %3.1fσ%s %5.1f ' % (
-                elapsed, n, float(runs)/1000, mean, std,
-                dist, '!' * int(max(0, dist-4)), scipy.var(v)),
+            print '%5.1f %4u %6s %4u %4.1f %6.1f ' % (
+                elapsed, n, runs, mean, std, scipy.var(v)),
             # silly Unicode histogram
             maxv = max(v)
             for k,freq in enumerate(v):
