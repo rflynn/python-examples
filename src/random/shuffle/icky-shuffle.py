@@ -36,49 +36,70 @@ if __name__ == '__main__':
 
     def run(args):
         # [0]th value frequency over a set of trials
-        n, size, runs, q = args
+        n, pop, trials, q = args
         start = time.time()
-        v = array('L', [0 for x in range(size)])
-        for _ in xrange(runs):
+        v = array('L', [0 for x in range(pop)])
+        for _ in xrange(trials):
             try:
-                v[seqshuffle(size)[0]] += 1
+                v[seqshuffle(pop)[0]] += 1
             except KeyboardInterrupt:
-                continue
+                pass
         now = time.time()
-        q.put((n, size, runs, v, now - start))
+        q.put((n, pop, trials, v, now - start))
 
-    MAX = int(sys.argv[1]) if len(sys.argv) > 1 else 50
-    RUNS = range(1, 20)
+    POP = int(sys.argv[1]) if len(sys.argv) > 1 else 50
+    RUNS = range(8, 24+1)
+
+    print 'Usage: python %s <popsize>' % (sys.argv[0],)
+    print 'popsize:', POP
+    print 'n: [%u, %u)' % (RUNS[0], RUNS[-1])
 
     man = Manager()
     q = man.Queue()
     p = Pool()
-    trials = [(n, MAX, (n*20)**2, q) for n in RUNS]
-    p.map_async(run, trials)
 
     # blame http://zachseward.com/sparktweets/
     # http://en.wikipedia.org/wiki/List_of_Unicode_characters#Block_elements
     BLOCKS = u' _▁▂▃▄▅▆▇█'
 
+    popsize = POP
+
+    prevtrials = 0
+    prevv = [0 for _ in range(popsize+1)]
+
     try:
-        for r in RUNS:
-            # laziest way of displaying results in the right order
-            n = None
-            while n != r:
-                n, size, runs, v, elapsed = q.get()
-                if n != r:
-                    q.put((n, size, runs, v, elapsed))
+        for n in RUNS:
+
+            # scatter: calculate the amount of work (trials), split it into a bunch of jobs and run
+            trials = 2**n
+            newtrials = trials - prevtrials
+            jobcnt = max(1, newtrials / (2**16))
+            jobs = [(n, popsize, newtrials/jobcnt, q) for j in range(jobcnt)]
+            last = time.time()
+            p.map(run, jobs)
+
+            # gather: wait for all results; sum and display
+            v = prevv
+            for j in range(len(jobs)):
+                _n, _pop, _trials, vj, _elapsed = q.get()
+                v = [sum(x) for x in zip(v, vj)]
+
+            prevv = v
+            prevtrials = trials
+
+            now = time.time()
+            elapsed = now - last
+
             # print header occasionally
-            if n % 25 == 1:
-                print '%-5s %-4s %-6s %-4s %-4s %-6s %s' % (
-                    'secs', 'n', 'trials', 'mean', 'std', 'var', 'graph')
+            if n % 25 == RUNS[0]:
+                print '%-2s %-3s %-6s %-4s %-5s %-8s %-8s %-5s %-5s %-5s %-5s %s' % (
+                    'n', 'pop', 'trials', 'jobs', 'sec', 'mean', 'var', 'std',
+                    'min', 'max', 'diff%', 'graph')
             # dump stats
-            mean = scipy.mean(v)
-            std = scipy.std(v)
-            outside = max(abs(x-mean) for x in v)
-            dist = outside / (1 if std == 0 else std)
-            print '%5.1f %4u %6s %4u %4.1f %6.1f ' % (
-                elapsed, size, runs, mean, std, scipy.var(v)),
+            print '%2u %3u %6s %4u %5.1f %8.1f %8.1f %5.1f %5u %5u %5.1f ' % (
+                n, popsize, '2**%u' % (n,), jobcnt, elapsed,
+                scipy.mean(v), scipy.var(v), scipy.std(v),
+                min(v), max(v), (1.-(min(v)/float(max(v))))*100),
             # silly Unicode histogram
             maxv = max(v)
             for k,freq in enumerate(v):
