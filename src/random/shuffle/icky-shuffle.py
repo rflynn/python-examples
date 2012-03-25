@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
     print 'Usage: python %s <popsize>' % (sys.argv[0],)
     print 'popsize:', POP
-    print 'n: [%u, %u)' % (RUNS[0], RUNS[-1])
+    print 'n: %u..%u' % (RUNS[0], RUNS[-1])
 
     man = Manager()
     q = man.Queue()
@@ -92,11 +92,11 @@ if __name__ == '__main__':
 
             # print header occasionally
             if n % 25 == RUNS[0]:
-                print '%-2s %-3s %-6s %-4s %-5s %-8s %-8s %-5s %-5s %-5s %-5s %s' % (
+                print '%-2s %-3s %-6s %-4s %-5s %-8s %-8s %-5s %-5s %-6s %-6s %s' % (
                     'n', 'pop', 'trials', 'jobs', 'sec', 'mean', 'var', 'std',
                     'min', 'max', 'diff%', 'graph')
             # dump stats
-            print '%2u %3u %6s %4u %5.1f %8.1f %8.1f %5.1f %5u %5u %5.1f ' % (
+            print '%2u %3u %6s %4u %5.1f %8.1f %8.1f %5.1f %6u %6u %5.1f ' % (
                 n, popsize, '2**%u' % (n,), jobcnt, elapsed,
                 scipy.mean(v), scipy.var(v), scipy.std(v),
                 min(v), max(v), (1.-(min(v)/float(max(v))))*100),
